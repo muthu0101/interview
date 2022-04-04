@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ServicesService } from './services.service';
-import {MatTableModule} from '@angular/material/table';
 import * as xml2js from 'xml2js';
 import { forkJoin } from 'rxjs';
 
@@ -24,13 +23,6 @@ export class AppComponent implements OnInit {
   constructor(private service: ServicesService) { }
 
   ngOnInit() {
-    // this.service.getUsersXML().subscribe(data => {
-    //   // this.dataSource = data;
-    //   this.parseXML(data)  
-    //   .then((data) => {  
-    //     this.dataSource = data;  
-    //   });
-    // });
 
     let jsonData=this.service.getUsersJson();
     let xmlData=this.service.getUsersXML();
