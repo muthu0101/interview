@@ -29,13 +29,10 @@ export class AppComponent implements OnInit {
 
     forkJoin([jsonData, xmlData]).subscribe(data => {
       this.dataSource = data[0];
-      this.parseXML(data[1])  
+      this.parseXML(data[1])
       .then((data) => {  
         this.dataSource = this.dataSource.concat(data);
-        console.log(this.dataSource);
-        this.dataSource.sort((a: { id: number; }, b: { id: number; }) => (a.id > b.id) ? 1 : -1);
-        console.log(this.dataSource);
-        
+        this.dataSource.sort((a: { id: number; }, b: { id: number; }) => (a.id > b.id) ? 1 : -1);        
       });
     });
   }
