@@ -1,25 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ServicesService } from './services.service';
 import {MatTableModule} from '@angular/material/table';
+import * as xml2js from 'xml2js';
+import { forkJoin } from 'rxjs';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
+export interface userData {
+  id: number;
+  firstName: string;
+  lastName: string;
 }
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
 
 @Component({
   selector: 'app-root',
@@ -27,8 +16,61 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Interview';
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
+  displayedColumns: string[] = ['id', 'firstName', 'lastName'];
+  dataSource: any;
+
+  constructor(private service: ServicesService) { }
+
+  ngOnInit() {
+    // this.service.getUsersXML().subscribe(data => {
+    //   // this.dataSource = data;
+    //   this.parseXML(data)  
+    //   .then((data) => {  
+    //     this.dataSource = data;  
+    //   });
+    // });
+
+    let jsonData=this.service.getUsersJson();
+    let xmlData=this.service.getUsersXML();
+
+    forkJoin([jsonData, xmlData]).subscribe(data => {
+      this.dataSource = data[0];
+      this.parseXML(data[1])  
+      .then((data) => {  
+        this.dataSource = this.dataSource.concat(data);
+        console.log(this.dataSource);
+        this.dataSource.sort((a: { id: number; }, b: { id: number; }) => (a.id > b.id) ? 1 : -1);
+        console.log(this.dataSource);
+        
+      });
+    });
+  }
+
+  parseXML(data: Object) {  
+    return new Promise(resolve => {  
+      var k: string | number,  
+        arr: any = [],  
+        parser = new xml2js.Parser(  
+          {  
+            trim: true,  
+            explicitArray: true  
+          });  
+      parser.parseString(data, function (err: any, result: { dataset: any; }) {  
+        
+        var obj = result.dataset;  
+        for (k in obj.record) {  
+          var item = obj.record[k];  
+          arr.push({  
+            id: parseInt(item.id[0]),  
+            firstName: item.firstName[0],  
+            lastName: item.lastName[0],  
+          });
+        }  
+        resolve(arr);  
+      });  
+    });  
+  }  
+
 }
