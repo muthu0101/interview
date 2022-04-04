@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ServicesService } from './services.service';
 import * as xml2js from 'xml2js';
 import { forkJoin } from 'rxjs';
+import { User } from './user';
 
 @Component({
   selector: 'app-root',
