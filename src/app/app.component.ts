@@ -3,12 +3,6 @@ import { ServicesService } from './services.service';
 import * as xml2js from 'xml2js';
 import { forkJoin } from 'rxjs';
 
-export interface userData {
-  id: number;
-  firstName: string;
-  lastName: string;
-}
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
